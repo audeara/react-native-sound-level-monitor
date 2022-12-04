@@ -1,35 +1,76 @@
 {
-  "name": "react-native-sound-level",
-  "version": "1.1.5",
+  "name": "react-native-sound-level-monitor",
+  "version": "1.0.0",
   "description": "A package to dynamically measure microphone input level",
-  "main": "index.js",
-  "author": "Vladimir Osipov (https://github.com/punarinta)",
-  "homepage": "https://github.com/punarinta/react-native-sound-level",
+  "main": "build/index.js",
+  "author": "April Mintac Pineda (https://github.com/aprilmintacpineda)",
+  "homepage": "https://github.com/aprilmintacpineda/react-native-sound-level-monitor",
   "files": [
+    "build/",
     "README.md",
     "LICENSE",
     "index.js",
+    "index.ts",
     "RNSoundLevel.podspec",
-    "android/*",
-    "ios/RNSoundLevelModule.m",
-    "ios/RNSoundLevelModule.h",
-    "ios/RNSoundLevel.xcodeproj",
-    "desktop/*"
+    "android",
+    "ios",
+    "desktop"
   ],
   "keywords": [
     "react-native",
     "microphone",
     "input",
     "level",
-    "measure"
+    "measure",
+    "decibels",
+    "sound"
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:punarinta/react-native-sound-level.git"
+    "url": "git@github.com:aprilmintacpineda/react-native-sound-level-monitor.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/punarinta/react-native-sound-level/issues"
+    "url": "https://github.com/aprilmintacpineda/react-native-sound-level-monitor/issues"
   },
-  "nativePackage": true
+  "nativePackage": true,
+  "peerDependencies": {
+    "react-native": "^0.59"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.10",
+    "@types/react-native": "^0.70.7",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@typescript-eslint/typescript-estree": "^5.45.0",
+    "eslint": "7.32.0",
+    "eslint-import-resolver-babel-module": "^5.3.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^27.1.6",
+    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.1.0",
+    "prettier": "^2.8.0"
+  },
+  "lint-staged": {
+    "*": [
+      "prettier --write"
+    ],
+    "*.js|*.jsx|*.ts|*.tsx": [
+      "eslint --fix"
+    ]
+  },
+  "scripts": {
+    "ts-check": "tsc --noEmit",
+    "eslint": "eslint . --fix",
+    "prettier": "prettier . --write",
+    "lint": "npm run prettier && npm run eslint",
+    "postinstall": "npx yarn-deduplicate yarn.lock && husky install",
+    "build": "rm -rf build && tsc -p tsconfig.json && cp types/soundLevelMonitor.d.ts build",
+    "prepublish": "build"
+  },
+  "dependencies": {
+    "typescript": "^4.9.3"
+  }
 }

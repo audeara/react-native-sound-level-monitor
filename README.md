@@ -1,79 +1,69 @@
+# react-native-sound-level-monitor
+
 A package to dynamically measure sound input level in React Native applications.
 Can be used to help user to adjust microphone sensitivity.
 
-### Installation
+## Installation
 
-Install the npm package and link it to your project:
+Choose between `yarn add react-native-sound-level-monitor` or `npm install --save react-native-sound-level-monitor` and then run `pod install`
 
-```
-npm install react-native-sound-level --save
-react-native link react-native-sound-level
-```
+#### iOS
 
-On *iOS* you need to add a usage description to `Info.plist`:
+You need to add a usage description to `Info.plist`:
 
 ```
 <key>NSMicrophoneUsageDescription</key>
-<string>This sample uses the microphone to analyze sound level.</string>
+<string>TEXT HERE</string>
 ```
 
-On *Android* you need to add a permission to `AndroidManifest.xml`:
+#### Android
+
+You need to add a permission to `AndroidManifest.xml`:
 
 ```
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
-### Manual installation on iOS
-```
-In XCode, in the project navigator:
+#### Installation on Ubuntu
 
-* Right click _Libraries_
-* Add Files to _[your project's name]_
-* Go to `node_modules/react-native-sound-level`
-* Add the `.xcodeproj` file
-
-In XCode, in the project navigator, select your project.
-
-* Add the `libRNSoundLevel.a` from the _soundlevel_ project to your project's _Build Phases ➜ Link Binary With Libraries_
-```
-
-### Installation on Ubuntu
-1. Add to package.json: `"desktopExternalModules": [ "node_modules/react-native-sound-level/desktop" ]`
+1. Add to package.json: `"desktopExternalModules": [ "node_modules/react-native-sound-level-monitor/desktop" ]`
 2. You may need to make QT's multimedia library accessible for linker
-`sudo ln -s $YOUR_QT_DIR/5.9.1/gcc_64/lib/libQt5Multimedia.so /usr/local/lib/libQt5Multimedia.so`
+   `sudo ln -s $YOUR_QT_DIR/5.9.1/gcc_64/lib/libQt5Multimedia.so /usr/local/lib/libQt5Multimedia.so`
 
+## Usage
 
-### React Native 0.60+
-To make it run correctly on iOS you may need the following:
-1. Add `pod 'react-native-sound-level', :podspec => '../node_modules/react-native-sound-level/RNSoundLevel.podspec'` to your `ios/Podfile` file.
-2. Unlink the library if linked before (`react-native unlink react-native-sound-level`).
-3. Run `pod install` from within your project `ios` directory
+```ts
+import rnSoundLevelMonitor, {
+  SoundLevelResultType
+} from 'react-native-sound-level-monitor';
 
+const monitoringInterval = 50;
 
-### Usage
+export const soundLevelMonitor = rnSoundLevelMonitor(
+  monitoringInterval
+);
 
-```js
-import RNSoundLevel from 'react-native-sound-level'
+// you can start monitoring anywhere in your code
+soundLevelMonitor.start(); // optional argument
 
-componentDidMount() {
-  RNSoundLevel.start()
-  RNSoundLevel.onNewFrame = (data) => {
-    // see "Returned data" section below
-    console.log('Sound level info', data)
+// you can stop monitoring anywhere in your code
+soundLevelMonitor.stop();
+
+// you can add listeners which will be called on every frame
+const removeThisListener = soundLevelMonitor.addListener(
+  (data: SoundLevelResultType) => {
+    console.log('new frame', data);
   }
-}
+);
 
-// don't forget to stop it
-componentWillUnmount() {
-  RNSoundLevel.stop()
-}
+// you can then remove added listener by calling the returned callback of `addListener`
+removeThisListener();
 ```
 
-### Returned data
-```
-{
-  "id",             // frame number
-  "value",          // sound level in decibels, -160 is a silence level
-  "rawValue"        // raw level value, OS-dependent
-}
-```
+## Credits
+
+Originally forked from https://github.com/punarinta/react-native-sound-level. It seems like the original package is no longer being maintained so I forked it and made tons of improvements. Improvements made were also based on the PRs at the time.
+
+- https://github.com/punarinta/react-native-sound-level/pull/24
+- https://github.com/punarinta/react-native-sound-level/pull/21
+- https://github.com/punarinta/react-native-sound-level/pull/13
