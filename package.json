@@ -68,7 +68,7 @@
     "lint": "npm run prettier && npm run eslint",
     "husky-install": "husky install",
     "clean-lock": "npx yarn-deduplicate yarn.lock",
-    "build": "rm -rf build && tsc -p tsconfig.json"
+    "publish": "rm -rf build && tsc -p tsconfig.json"
   },
   "dependencies": {
     "typescript": "^4.9.3"
