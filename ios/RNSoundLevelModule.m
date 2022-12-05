@@ -14,10 +14,8 @@
 #import <AVFoundation/AVFoundation.h>
 
 @implementation RNSoundLevelModule {
-
   AVAudioRecorder *_audioRecorder;
   id _progressUpdateTimer;
-  int _frameId;
   int _progressUpdateInterval;
   NSDate *_prevProgressUpdateTime;
   AVAudioSession *_recordSession;
@@ -34,14 +32,11 @@ RCT_EXPORT_MODULE();
 
   if (_prevProgressUpdateTime == nil ||
    (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
-      _frameId++;
       NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
-      [body setObject:[NSNumber numberWithFloat:_frameId] forKey:@"id"];
 
       [_audioRecorder updateMeters];
-      float _currentLevel = [_audioRecorder averagePowerForChannel: 0];
-      [body setObject:[NSNumber numberWithFloat:_currentLevel] forKey:@"value"];
-      [body setObject:[NSNumber numberWithFloat:_currentLevel] forKey:@"rawValue"];
+      float value = [_audioRecorder peakPowerForChannel: 0];
+      [body setObject:[NSNumber numberWithFloat:value] forKey:@"value"];
 
       [self.bridge.eventDispatcher sendAppEventWithName:@"frame" body:body];
 

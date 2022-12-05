@@ -25,7 +25,6 @@ class RNSoundLevelModule extends ReactContextBaseJavaModule {
   private MediaRecorder recorder;
   private boolean isRecording = false;
   private Timer timer;
-  private int frameId = 0;
 
   public RNSoundLevelModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -53,8 +52,7 @@ class RNSoundLevelModule extends ReactContextBaseJavaModule {
       recorder.setAudioChannels(1);
       recorder.setAudioEncodingBitRate(32000);
       recorder.setOutputFile(this.getReactApplicationContext().getCacheDir().getAbsolutePath() + "/soundlevel");
-    }
-    catch(final Exception e) {
+    } catch(final Exception e) {
       logAndRejectPromise(promise, "COULDNT_CONFIGURE_MEDIA_RECORDER" , "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file " + e.getMessage());
       return;
     }
@@ -67,7 +65,6 @@ class RNSoundLevelModule extends ReactContextBaseJavaModule {
 
     recorder.start();
 
-    frameId = 0;
     isRecording = true;
     startTimer(monitorInterval);
     promise.resolve(true);
@@ -86,12 +83,10 @@ class RNSoundLevelModule extends ReactContextBaseJavaModule {
     try {
       recorder.stop();
       recorder.release();
-    }
-    catch (final RuntimeException e) {
+    } catch (final RuntimeException e) {
       logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
       return;
-    }
-    finally {
+    } finally {
       recorder = null;
     }
 
@@ -100,20 +95,17 @@ class RNSoundLevelModule extends ReactContextBaseJavaModule {
 
   private void startTimer(int monitorInterval) {
     timer = new Timer();
+
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
-
           WritableMap body = Arguments.createMap();
-          body.putDouble("id", frameId++);
+          int maxAmplitude = recorder.getMaxAmplitude();
 
-          int amplitude = recorder.getMaxAmplitude();
-          if (amplitude == 0) {
+          if (maxAmplitude == 0) {
             body.putInt("value", -160);
-            body.putInt("rawValue", 0);
           } else {
-            body.putInt("rawValue", amplitude);
-            body.putInt("value", (int) (20 * Math.log(((double) amplitude) / 32767d)));
+            body.putInt("value", (int) (20 * Math.log((Math.abs((double) maxAmplitude)) / 32768.0)));
           }
 
           sendEvent("frame", body);
