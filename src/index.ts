@@ -68,7 +68,7 @@ function soundLevelMonitor(
     }
 
     // Monitoring interval not supported for Desktop yet. Feel free to add and do a pull request. :)
-    return isDesktop
+    return !isDesktop
       ? SoundLevelModule.start(monitorInterval)
       : SoundLevelModule.start();
   }
