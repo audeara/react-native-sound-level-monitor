@@ -1,6 +1,6 @@
 {
   "name": "react-native-sound-level-monitor",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "A package to dynamically measure microphone input level",
   "main": "build/index.js",
   "author": "April Mintac Pineda (https://github.com/aprilmintacpineda)",
