@@ -67,7 +67,7 @@
     "prettier": "prettier . --write",
     "lint": "npm run prettier && npm run eslint",
     "postinstall": "npx yarn-deduplicate yarn.lock && husky install",
-    "prepublish": "rm -rf build && tsc -p tsconfig.json"
+    "build": "rm -rf build && tsc -p tsconfig.json"
   },
   "dependencies": {
     "typescript": "^4.9.3"
