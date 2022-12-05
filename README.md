@@ -37,11 +37,11 @@ import rnSoundLevelMonitor, {
   SoundLevelResultType
 } from 'react-native-sound-level-monitor';
 
-const monitoringInterval = 50;
+// OPTIONAL (default 250): the rate, in milliseconds, which to check for microphone sound
+const monitorInterval = 50;
 
-export const soundLevelMonitor = rnSoundLevelMonitor(
-  monitoringInterval
-);
+export const soundLevelMonitor =
+  rnSoundLevelMonitor(monitorInterval);
 
 // you can start monitoring anywhere in your code
 soundLevelMonitor.start(); // optional argument
@@ -58,6 +58,72 @@ const removeThisListener = soundLevelMonitor.addListener(
 
 // you can then remove added listener by calling the returned callback of `addListener`
 removeThisListener();
+```
+
+#### Full example
+
+```tsx
+import React, { useCallback, useEffect, useState } from 'react';
+import { Platform, Text } from 'react-native';
+import {
+  PERMISSIONS,
+  requestMultiple
+} from 'react-native-permissions';
+import rnSoundLevelMonitor from 'react-native-sound-level-monitor';
+
+const soundLevelMonitor = rnSoundLevelMonitor(50);
+
+const App: React.FunctionComponent = () => {
+  const [canProceed, setCanProceed] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false);
+
+  const requestPermissions = useCallback(async () => {
+    const permissions = await requestMultiple(
+      Platform.select({
+        ios: [PERMISSIONS.IOS.CAMERA, PERMISSIONS.IOS.MICROPHONE],
+        default: [
+          PERMISSIONS.ANDROID.CAMERA,
+          PERMISSIONS.ANDROID.RECORD_AUDIO
+        ]
+      })
+    );
+
+    setHasChecked(true);
+
+    if (
+      (permissions['android.permission.CAMERA'] === 'granted' &&
+        permissions['android.permission.RECORD_AUDIO'] ===
+          'granted') ||
+      (permissions['ios.permission.CAMERA'] === 'granted' &&
+        permissions['ios.permission.MICROPHONE'] === 'granted')
+    )
+      setCanProceed(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasChecked) requestPermissions();
+  }, [hasChecked, requestPermissions]);
+
+  useEffect(() => {
+    const removeListener = soundLevelMonitor.addListener(data => {
+      console.log(data);
+    });
+
+    return removeListener;
+  }, []);
+
+  useEffect(() => {
+    if (!canProceed) return;
+    soundLevelMonitor.start();
+    return soundLevelMonitor.stop;
+  }, [canProceed]);
+
+  if (!canProceed) return null;
+
+  return <Text>Monitoring sound</Text>;
+};
+
+export default App;
 ```
 
 ## Credits
