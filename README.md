@@ -11,7 +11,7 @@ Choose between `yarn add react-native-sound-level-monitor` or `npm install --sav
 
 You need to add a usage description to `Info.plist`:
 
-```
+```xml
 <key>NSMicrophoneUsageDescription</key>
 <string>TEXT HERE</string>
 ```
@@ -20,7 +20,7 @@ You need to add a usage description to `Info.plist`:
 
 You need to add a permission to `AndroidManifest.xml`:
 
-```
+```xml
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
