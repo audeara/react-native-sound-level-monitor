@@ -5,6 +5,24 @@ import {
   EmitterSubscription
 } from 'react-native';
 
+export type SoundLevelMonitorResult = {
+  /**
+   * @description Frame number
+   */
+  id: number;
+
+  /**
+   * @description Sound level in decibels
+   * @description -160 is a silence
+   */
+  value: number;
+
+  /**
+   * @description raw level value, OS-depended
+   */
+  rawValue: number;
+};
+
 const isDesktop =
   Platform.OS === 'macos' || Platform.OS === 'windows';
 
