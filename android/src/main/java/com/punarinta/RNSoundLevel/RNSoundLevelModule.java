@@ -100,14 +100,17 @@ class RNSoundLevelModule extends ReactContextBaseJavaModule {
       @Override
       public void run() {
           WritableMap body = Arguments.createMap();
-          int maxAmplitude = recorder.getMaxAmplitude();
+          double timestamp = System.currentTimeMillis();
+          double maxAmplitude = recorder.getMaxAmplitude();
 
           if (maxAmplitude == 0) {
-            body.putInt("value", -160);
+            body.putDouble("value", -160.0);
           } else {
-            body.putInt("value", (int) (20 * Math.log((Math.abs((double) maxAmplitude)) / 32768.0)));
+            double dBFS = 20 * Math.log((Math.abs(maxAmplitude)) / 32768.0);
+            body.putDouble("value", dBFS);
           }
 
+          body.putDouble("timestamp", timestamp);
           sendEvent("frame", body);
       }
     }, 0, monitorInterval);

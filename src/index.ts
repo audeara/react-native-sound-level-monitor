@@ -11,6 +11,11 @@ export type SoundLevelMonitorResult = {
    * @description The returned value ranges from –160 dBFS, indicating minimum power, to 0 dBFS, indicating maximum power.
    */
   value: number;
+
+  /**
+   * @description the current timestamp in milliseconds when the value was taken
+   */
+  timestamp: number;
 };
 
 const isDesktop =
@@ -29,11 +34,11 @@ function soundLevelMonitor(
   let hasStarted = false;
   let timer: NodeJS.Timer | undefined;
   let frameSubscription: EmitterSubscription | undefined;
-  let listeners: Array<(soundLevel: number) => void> = [];
+  let listeners: Array<(data: SoundLevelMonitorResult) => void> = [];
 
-  function callListeners(soundLevel: number) {
+  function callListeners(data: SoundLevelMonitorResult) {
     listeners.forEach(callback => {
-      callback(soundLevel);
+      callback(data);
     });
   }
 
@@ -43,19 +48,15 @@ function soundLevelMonitor(
 
     if (isDesktop) {
       timer = setInterval(async () => {
-        const frame = await SoundLevelModule.measure();
-
-        const { value } = JSON.parse(
-          frame
-        ) as SoundLevelMonitorResult;
-
-        callListeners(value);
+        const dataStr: string = await SoundLevelModule.measure();
+        const data: SoundLevelMonitorResult = JSON.parse(dataStr);
+        callListeners(data);
       }, monitorInterval);
     } else {
       frameSubscription = NativeAppEventEmitter.addListener(
         'frame',
-        ({ value }: SoundLevelMonitorResult) => {
-          callListeners(value);
+        (data: SoundLevelMonitorResult) => {
+          callListeners(data);
         }
       );
     }
@@ -73,7 +74,9 @@ function soundLevelMonitor(
     hasStarted = false;
   }
 
-  function addListener(callback: (soundLevel: number) => void) {
+  function addListener(
+    callback: (data: SoundLevelMonitorResult) => void
+  ) {
     listeners.push(callback);
 
     return () => {

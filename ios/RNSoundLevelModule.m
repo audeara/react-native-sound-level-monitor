@@ -34,9 +34,12 @@ RCT_EXPORT_MODULE();
    (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
       NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
 
+      long long timestamp = (long long)([[NSDate date] timeIntervalSince1970] * 1000.0);
       [_audioRecorder updateMeters];
       float value = [_audioRecorder peakPowerForChannel: 0];
+
       [body setObject:[NSNumber numberWithFloat:value] forKey:@"value"];
+      [body setObject:[NSNumber numberWithLongLong:timestamp] forKey:@"timestamp"];
 
       [self.bridge.eventDispatcher sendAppEventWithName:@"frame" body:body];
 
