@@ -32,7 +32,7 @@ function soundLevelMonitor(
   monitorInterval = 250
 ) {
   let hasStarted = false;
-  let timer: NodeJS.Timer | undefined;
+  let timer: NodeJS.Timeout | undefined;
   let frameSubscription: EmitterSubscription | undefined;
   let listeners: Array<(data: SoundLevelMonitorResult) => void> = [];
 
